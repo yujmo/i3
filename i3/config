@@ -28,14 +28,16 @@ font pango:wenquanyi 12
 # X core fonts rendering does not support right-to-left and this being a bitmap
 # font, it doesn’t scale on retina/hidpi displays.
 
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # change the backgoup
+exec --no-startup-id compton -b
 exec_always --no-startup-id feh --bg-scale "/root/.config/i3/1.png"
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec urxvt -sh 100
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -97,7 +99,24 @@ bindsym $mod+a focus parent
 # focus the child container
 #bindsym $mod+d focus child
 
-# switch to workspace
+# prt sc
+# bindsym $mod+Print exec shutter -s -e -o ~/Pictures/shot/%Y-%m-%d-%T.png 
+# bindsym Print exec shutter -f -e -o ~/Pictures/shot/%Y-%m-%d-%T.png 
+
+# workspace
+
+#force_xinerama yes
+
+exec --no-startup-id xset s 0
+exec --no-startup-id xset dpms 120  
+
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+workspace_auto_back_and_forth yes
+
+# switch workspace
+bindsym $mod+Shift+x workspace  "ヾ(≧▽≦*)o"
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
 bindsym $mod+3 workspace 3
@@ -107,7 +126,10 @@ bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym $mod+0 workspace 0
+bindsym $mod+Shift+f workspace "Firefox"
+bindsym $mod+Shift+t workspace "Terminal"
+bindsym $mod+Shift+m workspace "Emacs"
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
@@ -121,18 +143,43 @@ bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
+# open the app with tabbed
+for_window [class="URxvt"] layout tabbed
+for_window [class="Firefox"] layout tabbed
+for_window [class="Emacs"] layout tabbed
+assign [class="URxvt"] "Terminal"
+assign [class="Firefox"] "Firefox"
+assign [class="Emacs"] "Emacs"
+
+# The side buttons move the window around
+bindsym button1 move left
+bindsym button2 nop
+bindsym button3 move right
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
+
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
+
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
-# urxvt 
-bindsym $mode+Return exec urxvt -sh 40
+# firefox 
+bindsym $mod+o exec firefox
 
-# emacs
-bindsym $mode+e exec  emacs
+# emacs 
+bindsym $mod+m exec emacs
+
+ set $mode_system  lock(L) logout(O) reboot(R) shutdown(S) exit(Esc)
+bindsym $mod+c mode "$mode_system"
+mode "$mode_system" {
+    bindsym l exec --no-startup-id i3lock -c '#000000', mode "default"
+    bindsym o exec --no-startup-id i3-msg exit, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym s exec --no-startup-id systemctl poweroff, mode "default"
+    bindsym Escape mode "default"
+    }
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -163,9 +210,27 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command    i3status
+        id bar-1
+        status_command    i3status --config ~/.config/i3status/top-config
         position          top
         workspace_buttons yes
+        tray_output       none
+        font pango:wenquanyi 12
+        colors {
+           background #000000
+           statusline #ffffff
+           focused_workspace  #ffffff #285577
+           active_workspace   #ffffff #333333
+           inactive_workspace #888888 #222222
+           urgent_workspace   #ffffff #900000
+        }  
+}
+
+bar {
+        id bar-2
+        status_command    i3status --config ~/.config/i3status/bottem-config
+        position          bottom
+        workspace_buttons none
         tray_output       none
         font pango:wenquanyi 12
         colors {
